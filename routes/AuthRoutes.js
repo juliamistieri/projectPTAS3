@@ -1,6 +1,11 @@
-const router = require("express").Router();
+const express = require ("express");
+const router = express.Router();
 
-router.post("/cadastro", (req, res) => {});
-router.login("/login",(req, res) => {});
+const AuthController = require("../controllers/AuthController");
 
-module.exports = router;
+router.post("/login", AuthController.login);
+router.post("/cadastro", AuthController.cadastro);
+
+
+
+module.exports = router
