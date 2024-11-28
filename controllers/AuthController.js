@@ -10,21 +10,21 @@ class AuthController {
     if (!nome || nome.length < 6) {
       return res.status(422).json({
         erro: true,
-        mensagem: "O nome deve ter pelo menos 6 caracteres."
+        mensagem: "O nome deve ter pelo menos 6 caracteres.",
       });
     }
 
     if (!email || email.length < 10) {
       return res.status(422).json({
         erro: true,
-        mensagem: "O email deve ter pelo menos 10 caracteres."
+        mensagem: "O email deve ter pelo menos 10 caracteres.",
       });
     }
 
     if (!password || password.length < 8) {
       return res.status(422).json({
         erro: true,
-        mensagem: "A senha deve ter pelo menos 8 caracteres."
+        mensagem: "A senha deve ter pelo menos 8 caracteres.",
       });
     }
 
@@ -34,10 +34,10 @@ class AuthController {
       },
     });
 
-    if (existe != 0) {
+    if (existe) {
       return res.status(422).json({
         erro: true,
-        mensagem: "Este email já está cadastrado."
+        mensagem: "Este email já está cadastrado.",
       });
     }
 
@@ -50,8 +50,12 @@ class AuthController {
           nome: nome,
           email: email,
           password: hashPassword,
-          tipo: "cliente"
-        }
+          tipo: "cliente",
+        },
+      });
+
+      const token = jwt.sign({ id: usuario.id }, process.env.SECRET_KEY, {
+        expiresIn: "1h",
       });
 
       return res.status(201).json({
@@ -59,47 +63,47 @@ class AuthController {
         mensagem: "Usuário cadastrado com sucesso!",
         token: token,
       });
-
     } catch (error) {
       return res.status(500).json({
         erro: true,
-        mensagem: "Ocorreu um erro ao cadastrar o usuário."
+        mensagem: "Ocorreu um erro ao cadastrar o usuário.",
       });
     }
   }
 
   static async login(req, res) {
-const { email, password } = req.body;
+    const { email, password } = req.body;
 
-const usuario = await prisma.usuario.findUnique({
-  where: {
-    email: email,
-  }
-});
-if(usuario){
-  return res.status(422).json({
-    erro: true,
-    mensagem: "Usuário não encontrado."
-  });
-}
+    const usuario = await prisma.usuario.findFirst({
+      where: {
+        email: email,
+      },
+    });
+    if (!usuario) {
+      return res.status(422).json({
+        erro: true,
+        mensagem: "Usuário não encontrado.",
+      });
+    }
 
-// Verificar se a senha está correta
-const senhaCorreta = bcryptjs.compareSync(password, usuario.password);
+    // Verificar se a senha está correta
+    const senhaCorreta = bcryptjs.compareSync(password, usuario.password);
 
-if(!senhaCorreta){
-  return res.status(422).json({
-    erro: true,
-    mensagem: "Senha incorreta."
-  });
-}
+    if (!senhaCorreta) {
+      return res.status(422).json({
+        erro: true,
+        mensagem: "Senha incorreta.",
+      });
+    }
 
-const token = jwt.sign({id: usuario.id}, process.env.SECRET_KEY, {
- expiresIn: "1h"
-});
-res.status(200).json({
-  erro: false,
-  mensagem: "Login realizado com sucesso!",
-});
+    const token = jwt.sign({ id: usuario.id }, process.env.SECRET_KEY, {
+      expiresIn: "1h",
+    });
+    res.status(200).json({
+      erro: false,
+      mensagem: "Login realizado com sucesso!",
+      token: token,
+    });
   }
 }
 module.exports = AuthController;
