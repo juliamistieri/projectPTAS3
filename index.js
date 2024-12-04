@@ -11,7 +11,7 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true}));
 
-const authRoutes = require("./routes/authRoutes");
+const authRoutes = require("./routes/AuthRoutes");
 app.use("/auth", authRoutes);
 
 app.get('/', (req, res) => {
