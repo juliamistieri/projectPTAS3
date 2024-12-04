@@ -13,3 +13,9 @@ app.use(express.urlencoded({ extended: true}));
 
 const authRoutes = require("./routes/authRoutes");
 app.use("/auth", authRoutes);
+
+app.get('/', (req, res) => {
+    console.log('pagina raiz')
+})
+
+app.listen(8000)
