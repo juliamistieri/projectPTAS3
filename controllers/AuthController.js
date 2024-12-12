@@ -73,6 +73,7 @@ class AuthController {
 
   static async login(req, res) {
     const { email, password } = req.body;
+    console.log(email,password)
 
     const usuario = await prisma.usuario.findFirst({
       where: {
